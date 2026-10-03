@@ -49,7 +49,38 @@ Os registros fornecidos para o trabalho podem ser importados diretamente para um
 ## 🏗️ Arquitetura
 
 A aplicação foi organizada seguindo uma separação de responsabilidades:
-
+                         ┌─────────────────────┐
+                         │      JSON CFM       │
+                         │    dados brutos     │
+                         └──────────┬──────────┘
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │      MongoDB        │
+                         │  coleção medicos    │
+                         │   DADO ORIGINAL     │
+                         └──────────┬──────────┘
+                                    │
+                              IMPORTAÇÃO /
+                              NORMALIZAÇÃO
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │       MySQL         │
+                         │ tabela medico       │
+                         │ DADO NORMALIZADO    │
+                         └──────────┬──────────┘
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │       Service       │
+                         └──────────┬──────────┘
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │      Controller     │
+                         │      REST API       │
+                         └─────────────────────┘
 ```text
                     ┌─────────────────────┐
                     │      Cliente        │
