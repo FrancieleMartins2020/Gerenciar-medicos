@@ -49,6 +49,8 @@ Os registros fornecidos para o trabalho podem ser importados diretamente para um
 ## 🏗️ Arquitetura
 
 A aplicação foi organizada seguindo uma separação de responsabilidades:
+
+```text
                          ┌─────────────────────┐
                          │      JSON CFM       │
                          │    dados brutos     │
@@ -81,7 +83,7 @@ A aplicação foi organizada seguindo uma separação de responsabilidades:
                          │      Controller     │
                          │      REST API       │
                          └─────────────────────┘
-```text
+
                     ┌─────────────────────┐
                     │      Cliente        │
                     │ Postman / Frontend  │
