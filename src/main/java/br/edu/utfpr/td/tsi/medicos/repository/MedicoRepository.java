@@ -1,80 +1,40 @@
 package br.edu.utfpr.td.tsi.medicos.repository;
 
 import br.edu.utfpr.td.tsi.medicos.model.Medico;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
-public class MedicoRepository {
+public interface MedicoRepository extends JpaRepository<Medico, Long> {
 
-    private final List<Medico> medicos = new ArrayList<>();
+    Optional<Medico> findByCrmAndUf(String crm, String uf);
 
-    private final AtomicLong sequence = new AtomicLong(0);
+    boolean existsByCrmAndUf(String crm, String uf);
 
-    public List<Medico> findAll() {
-        return new ArrayList<>(medicos);
-    }
-
-    public Optional<Medico> findById(Long id) {
-
-        return medicos.stream()
-                .filter(medico -> medico.getId().equals(id))
-                .findFirst();
-    }
-
-    public Optional<Medico> findByCrmAndUf(String crm, String uf) {
-
-        return medicos.stream()
-                .filter(medico ->
-                        medico.getCrm().equalsIgnoreCase(crm)
-                                && medico.getUf().equalsIgnoreCase(uf))
-                .findFirst();
-    }
-
-    public Medico save(Medico medico) {
-
-        if (medico.getId() == null) {
-            medico.setId(sequence.incrementAndGet());
-            medicos.add(medico);
-        } else {
-
-            for (int i = 0; i < medicos.size(); i++) {
-
-                if (medicos.get(i).getId().equals(medico.getId())) {
-                    medicos.set(i, medico);
-                    break;
-                }
-            }
-        }
-
-        return medico;
-    }
-
-    public void deleteById(Long id) {
-
-        medicos.removeIf(medico ->
-                medico.getId().equals(id));
-    }
-
-    public boolean existsById(Long id) {
-
-        return medicos.stream()
-                .anyMatch(medico ->
-                        medico.getId().equals(id));
-    }
-
-    public boolean existsByCrmAndUf(
-            String crm,
-            String uf,
-            Long idExcluir) {
-
-        return medicos.stream()
-                .anyMatch(medico ->
-                        medico.getCrm().equalsIgnoreCase(crm)
-                                && medico.getUf().equalsIgnoreCase(uf)
-                                && !medico.getId().equals(idExcluir));
-    }
+    @Query(value = "SELECT DISTINCT m FROM Medico m " +
+            "LEFT JOIN FETCH m.especialidades esp " +
+            "WHERE m.id IN (" +
+            "  SELECT m2.id FROM Medico m2 " +
+            "  LEFT JOIN m2.especialidades e " +
+            "  WHERE (:nome IS NULL OR m2.nome LIKE CONCAT('%', :nome, '%')) AND " +
+            "  (:crm IS NULL OR m2.crm = :crm) AND " +
+            "  (:especialidade IS NULL OR e.nome LIKE CONCAT('%', :especialidade, '%'))" +
+            ") ORDER BY m.nome ASC",
+            countQuery = "SELECT COUNT(DISTINCT m2) FROM Medico m2 " +
+                    "LEFT JOIN m2.especialidades e " +
+                    "WHERE (:nome IS NULL OR m2.nome LIKE CONCAT('%', :nome, '%')) AND " +
+                    "(:crm IS NULL OR m2.crm = :crm) AND " +
+                    "(:especialidade IS NULL OR e.nome LIKE CONCAT('%', :especialidade, '%'))")
+    Page<Medico> buscarComFiltros(
+            @Param("nome") String nome,
+            @Param("crm") String crm,
+            @Param("especialidade") String especialidade,
+            Pageable pageable
+    );
 }
