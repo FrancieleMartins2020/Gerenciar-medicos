@@ -14,7 +14,7 @@ import org.springframework.data.web.PageableDefault;import org.springdoc.core.an
 
 @RestController
 @RequestMapping("/api/medicos")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class MedicoController {
 
     private final MedicoService service;

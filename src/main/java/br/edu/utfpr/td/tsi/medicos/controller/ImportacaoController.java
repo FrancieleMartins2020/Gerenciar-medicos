@@ -8,7 +8,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/importacao")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class ImportacaoController {
 
     private final ImportacaoService service;
