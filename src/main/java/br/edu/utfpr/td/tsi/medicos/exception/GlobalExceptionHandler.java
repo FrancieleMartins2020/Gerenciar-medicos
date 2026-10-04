@@ -2,71 +2,52 @@ package br.edu.utfpr.td.tsi.medicos.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(MedicoNaoEncontradoException.class)
-    public ResponseEntity<Map<String, Object>> handleNotFound(
-            MedicoNaoEncontradoException exception) {
-
-        return buildResponse(
-                HttpStatus.NOT_FOUND,
-                exception.getMessage());
-    }
-
     @ExceptionHandler(RegraNegocioException.class)
-    public ResponseEntity<Map<String, Object>> handleBusinessRule(
-            RegraNegocioException exception) {
-
-        return buildResponse(
-                HttpStatus.BAD_REQUEST,
-                exception.getMessage());
+    public ResponseEntity<Map<String, Object>> tratarRegraNegocio(RegraNegocioException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", HttpStatus.BAD_REQUEST.value(),
+                "error", "Violação de Regra de Negócio",
+                "message", ex.getMessage()
+        ));
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleValidation(
-            MethodArgumentNotValidException exception) {
-
-        Map<String, Object> response = new HashMap<>();
-
-        Map<String, String> errors = new HashMap<>();
-
-        exception.getBindingResult()
-                .getFieldErrors()
-                .forEach(error ->
-                        errors.put(
-                                error.getField(),
-                                error.getDefaultMessage()));
-
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", 400);
-        response.put("errors", errors);
-
-        return ResponseEntity
-                .badRequest()
-                .body(response);
+    @ExceptionHandler(MedicoNaoEncontradoException.class)
+    public ResponseEntity<Map<String, Object>> tratarNaoEncontrado(MedicoNaoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", HttpStatus.NOT_FOUND.value(),
+                "error", "Recurso Não Encontrado",
+                "message", ex.getMessage()
+        ));
     }
 
-    private ResponseEntity<Map<String, Object>> buildResponse(
-            HttpStatus status,
-            String message) {
+    @ExceptionHandler(ImportacaoException.class)
+    public ResponseEntity<Map<String, Object>> tratarImportacaoException(ImportacaoException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", HttpStatus.SERVICE_UNAVAILABLE.value(),
+                "error", "Falha Operacional Híbrida",
+                "message", ex.getMessage()
+        ));
+    }
 
-        Map<String, Object> response = new HashMap<>();
-
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", status.value());
-        response.put("error", status.getReasonPhrase());
-        response.put("message", message);
-
-        return ResponseEntity
-                .status(status)
-                .body(response);
+    @ExceptionHandler(ColecaoVaziaException.class)
+    public ResponseEntity<Map<String, Object>> tratarColecaoVaziaException(ColecaoVaziaException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", HttpStatus.NOT_FOUND.value(),
+                "error", "Coleção Inexistente ou Limpa",
+                "message", ex.getMessage()
+        ));
     }
 }
