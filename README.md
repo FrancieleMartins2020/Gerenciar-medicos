@@ -166,12 +166,14 @@ O processo de carga utiliza processamento paginado de **1000 em 1000** registros
 
 ### ⏱️ Tempo de Execução da Carga Inicial
 * **Endpoint:** `POST /api/importacao/sincronizar`
-* **Tempo Total:** [INSIRA O TEMPO EX: 169 segundos]
+* **Tempo Total:**
+* <img width="1602" height="848" alt="image" src="https://github.com/user-attachments/assets/96abdeeb-31cb-433a-984c-ca45a75a27f8" />
+
 * **Veredito:** Commits em tempo real diretamente no MySQL do XAMPP com persistência relacional automatizada.
 
 > 📷 **Print do Console / Swagger do Tempo da Carga Inicial:**
-> <!-- COLE O SEU PRINT DA CARGA DO SWAGGER/CONSOLE AQUI -->
-> ![Tempo da Carga Inicial](CADASTRAR_LINK_DO_SEU_PRINT_AQUI)
+<img width="1610" height="806" alt="image" src="https://github.com/user-attachments/assets/af54faa7-05af-41ce-abff-4d6d17ed456a" />
+
 
 ---
 
